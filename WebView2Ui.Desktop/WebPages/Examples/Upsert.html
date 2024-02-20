@@ -1,0 +1,198 @@
+﻿<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Examples</title>
+
+    <link href="https://app-assets.local/Bootstrap/CSS/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="py-4 bg-body-tertiary">
+    <div class="container" id="message-errors"></div>
+
+    <div class="container">
+        <h1>Examples - <span class="upsert-action"></span></h1>
+        <a href="Index.html" class="btn btn-primary btn-sm">Go Back</a>
+        <hr />
+        <div class="container-fluid" id="form-container">
+            <button type="submit" class="btn btn-outline-primary">Save</button>
+        </div>
+    </div>
+
+    <template id="template-message-error">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span class="message-error-text"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </template>
+
+    <script src="https://app-assets.local/Bootstrap/JavaScript/bootstrap.bundle.min.js"></script>
+    <script src="https://app-assets.local/BootstrapFormBuilder/bootstrap-form-builder.min.js"></script>
+    <script src="https://app-assets.local/Shared.js"></script>
+    <script>
+        // form related stuff
+        const buildForm = () => {
+            const formOptions = {
+                fieldsets: [
+                    {
+                        grid: true,
+                        legend: '',
+                        fields: [
+                            {
+                                attributes: {
+                                    name: 'Id'
+                                },
+                                label: 'Id',
+                                type: 'hidden'
+                            },
+                            {
+                                attributes: {
+                                    name: 'ExampleName',
+                                    placeholder: 'Foo',
+                                    required: 'required'
+                                },
+                                label: 'Example Name',
+                                grid: {
+                                    xs: 12,
+                                    md: 6
+                                }
+                            },
+                            {
+                                attributes: {
+                                    name: 'OrdinalIndex',
+                                    placeholder: '1000',
+                                    min: 0,
+                                    step: 1,
+                                    required: 'required'
+                                },
+                                label: 'Ordinal Index',
+                                type: 'number',
+                                grid: {
+                                    xs: 12,
+                                    md: 6
+                                }
+                            }
+                        ]
+                    }
+                ],
+                submit: (e) => {
+                    e.preventDefault();
+                    console.log('submit');
+                }
+            };
+            const upsertForm = formBuilder.buildForm(formOptions);
+            document.querySelector('#form-container').prepend(upsertForm);
+            document.querySelector('#form-container > button[type="submit"]').setAttribute('form', upsertForm.id);
+
+            upsertForm.addEventListener('submit', onFormSubmit, false);
+        };
+
+        const populateForm = example => {
+            const form = document.querySelector('#form-container > form');
+            const elements = form.elements;
+
+            const idElement = elements['Id'];
+            idElement.value = example.Id;
+
+            const exampleNameElement = elements['ExampleName'];
+            exampleNameElement.value = example.ExampleName;
+
+            const ordinalIndexElement = elements['OrdinalIndex'];
+            ordinalIndexElement.value = example.OrdinalIndex;
+        };
+
+        const onFormSubmit = e => {
+            e.preventDefault();
+
+            const form = e.target;
+            const body = {
+                Id: form['Id'].value || window.crypto.randomUUID(),
+                ExampleName: form['ExampleName'].value,
+                OrdinalIndex: form['OrdinalIndex'].value
+            };
+            const action = document.querySelector('.upsert-action').textContent;
+            const webMessage = buildWebRequest('Examples', action, JSON.stringify(body));
+            toggleLoader(true);
+            window.chrome.webview.postMessage(webMessage);
+        };
+
+        // routings
+        const getExample = id => {
+            toggleLoader(true);
+            const webMessage = buildWebRequest('Examples', 'Get', JSON.stringify(id));
+            window.chrome.webview.postMessage(webMessage);
+        };
+
+        const onGetMessageReceived = response => {
+            const responseBody = response.Body;
+            if (response.Status === 200) {
+                const example = JSON.parse(responseBody);
+                populateForm(example);
+            } else {
+                console.error(response);
+                renderError(responseBody);
+            }
+        };
+
+        const onUpsertMessageReceived = response => {
+            const responseBody = response.Body;
+            if (response.Status === 200) {
+                const example = JSON.parse(responseBody);
+                window.location.href = `Upsert.html?id=${example.Id}`;
+            } else {
+                console.error(response);
+                renderError(responseBody);
+            }
+        };
+
+        const routeMappings = {
+            Get: onGetMessageReceived,
+            Create: onUpsertMessageReceived,
+            Update: onUpsertMessageReceived
+        };
+
+        // misc. functions
+        const updateUpsertActions = action => {
+            const upserActionElements = document.querySelectorAll('.upsert-action');
+            for (let upserActionElement of upserActionElements) {
+                upserActionElement.innerHTML = action;
+            }
+        };
+
+        const renderError = errorMessage => {
+            const template = document.querySelector('#template-message-error');
+            const alert = template.content.cloneNode(true);
+            alert.querySelector('.message-error-text').textContent = errorMessage;
+
+            const parent = document.querySelector('#message-errors');
+            parent.appendChild(alert);
+        };
+
+        // window events
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idParam = urlParams.get('id');
+            const action = idParam ? 'Update' : 'Create';
+
+            updateUpsertActions(action);
+            buildForm();
+            if (idParam) {
+                getExample(idParam);
+            }
+        }, false);
+
+        window.addEventListener('messageReceived', e => {
+            toggleLoader(false);
+
+            if (e.detail?.request) {
+                const request = e.detail.request;
+                const response = e.detail?.response || {};
+                if (routeMappings.hasOwnProperty(request.Route)) {
+                    const callback = routeMappings[request.Route];
+                    callback(response);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

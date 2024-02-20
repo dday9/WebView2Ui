@@ -1,0 +1,113 @@
+﻿<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Examples</title>
+
+    <link href="https://app-assets.local/Bootstrap/CSS/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="py-4 bg-body-tertiary">
+    <div class="container" id="message-errors"></div>
+
+    <div class="container">
+        <h1>Examples</h1>
+        <a href="Upsert.html" class="btn btn-primary btn-sm ms-auto">Create</a>
+        <hr />
+        <div id="list-group-examples" class="list-group mt-3">
+        </div>
+    </div>
+
+    <template id="template-no-records-list-group-item">
+        <li class="list-group-item"></li>
+    </template>
+
+    <template id="template-example-list-group-item">
+        <div class="list-group-item d-flex align-items-center justify-content-between">
+            <span class="example-name ms-2 me-auto"></span>
+            <a href="#" class="btn btn-primary btn-sm anchor-edit">Edit</a>
+        </div>
+    </template>
+
+    <template id="template-message-error">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <span class="message-error-text"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </template>
+
+    <script src="https://app-assets.local/Bootstrap/JavaScript/bootstrap.bundle.min.js"></script>
+    <script src="https://app-assets.local/Shared.js"></script>
+    <script>
+        const onGetAllMessageReceived = response => {
+            const responseBody = response.Body;
+            if (response.Status === 200) {
+                const examples = JSON.parse(responseBody);
+                renderExamples(examples);
+            } else {
+                console.error(response);
+                renderError(responseBody);
+            }
+        };
+
+        const renderError = errorMessage => {
+            const template = document.querySelector('#template-message-error');
+            const alert = template.content.cloneNode(true);
+            alert.querySelector('.message-error-text').textContent = errorMessage;
+
+            const parent = document.querySelector('#message-errors');
+            parent.appendChild(alert);
+        };
+
+        const renderExamples = examples => {
+            const listGroupExamples = document.querySelector('#list-group-examples');
+            listGroupExamples.innerHTML = '';
+
+            if (!examples.length) {
+                const listItemNoRecords = document.createElement('li');
+                listItemNoRecords.classList.add('list-group-item', 'text-center');
+                listItemNoRecords.textContent = 'No records available.'
+
+                listGroupExamples.appendChild(listItemNoRecords);
+                return;
+            }
+
+            const template = document.querySelector('#template-example-list-group-item');
+            examples.forEach(example => {
+                const listItemExample = template.content.cloneNode(true);
+                listItemExample.querySelector('.example-name').textContent = `${example.OrdinalIndex}. ${example.ExampleName}`;
+                listItemExample.querySelector('.anchor-edit').setAttribute('href', `Upsert.html?id=${example.Id}`);
+
+                listGroupExamples.appendChild(listItemExample);
+            });
+        };
+
+        const getExamples = () => {
+            toggleLoader(true);
+            const webMessage = buildWebRequest('Examples', 'GetAll', JSON.stringify({}));
+            window.chrome.webview.postMessage(webMessage);
+        };
+
+        const routeMappings = {
+            GetAll: onGetAllMessageReceived
+        };
+
+        window.addEventListener('load', () => {
+            getExamples();
+        }, false);
+
+        window.addEventListener('messageReceived', e => {
+            toggleLoader(false);
+
+            if (e.detail?.request) {
+                const request = e.detail.request;
+                const response = e.detail?.response || {};
+                if (routeMappings.hasOwnProperty(request.Route)) {
+                    const callback = routeMappings[request.Route];
+                    callback(response);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

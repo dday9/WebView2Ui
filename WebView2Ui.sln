@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WebView2Ui.Domain", "WebView2Ui.Domain\WebView2Ui.Domain.vbproj", "{64582536-0A02-4281-A603-8BEE17520BBC}"
+EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WebView2Ui.Desktop", "WebView2Ui.Desktop\WebView2Ui.Desktop.vbproj", "{5AE5E6B9-B654-46C9-A906-F22DD3A3AEBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{64582536-0A02-4281-A603-8BEE17520BBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64582536-0A02-4281-A603-8BEE17520BBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64582536-0A02-4281-A603-8BEE17520BBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64582536-0A02-4281-A603-8BEE17520BBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AE5E6B9-B654-46C9-A906-F22DD3A3AEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AE5E6B9-B654-46C9-A906-F22DD3A3AEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AE5E6B9-B654-46C9-A906-F22DD3A3AEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AE5E6B9-B654-46C9-A906-F22DD3A3AEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3AE19EC3-47BD-403B-92B2-4C43DFE729A1}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,84 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <StartupObject>WebView2Ui.Desktop.My.MyApplication</StartupObject>
+    <UseWindowsForms>true</UseWindowsForms>
+    <MyType>WindowsForms</MyType>
+    <OptionStrict>On</OptionStrict>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="WebAssets\BootstrapFormBuilder\bootstrap-form-builder.min.js" />
+    <None Remove="WebAssets\Bootstrap\CSS\bootstrap.min.css" />
+    <None Remove="WebAssets\Bootstrap\CSS\bootstrap.min.css.map" />
+    <None Remove="WebAssets\Bootstrap\JavaScript\bootstrap.bundle.min.js" />
+    <None Remove="WebAssets\Bootstrap\JavaScript\bootstrap.bundle.min.js.map" />
+    <None Remove="WebAssets\Images\loading.gif" />
+    <None Remove="WebAssets\Shared.js" />
+    <None Remove="WebPages\Examples\Index.html" />
+    <None Remove="WebPages\Examples\Upsert.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebView2Ui.Domain\WebView2Ui.Domain.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="My Project\Application.Designer.vb">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="WebAssets\BootstrapFormBuilder\bootstrap-form-builder.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Bootstrap\CSS\bootstrap.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Bootstrap\CSS\bootstrap.min.css.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Bootstrap\JavaScript\bootstrap.bundle.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Bootstrap\JavaScript\bootstrap.bundle.min.js.map">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Images\loading.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebAssets\Shared.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebPages\Examples\Upsert.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="WebPages\Examples\Index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>
